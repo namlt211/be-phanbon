@@ -2,6 +2,7 @@ package routers
 
 import (
 	"green/controllers/auth"
+	"green/middlewares"
 	"log"
 	"net/http"
 
@@ -11,6 +12,7 @@ import (
 func NewRouter() {
 	post := ":8080"
 	r := mux.NewRouter()
+    r.Use(middlewares.CORSMiddleware)
 	r.HandleFunc("/login", auth.Login).Methods("POST")
 	r.HandleFunc("/register", auth.Register).Methods("POST")
 	r.HandleFunc("/logout", auth.Logout).Methods("GET")
