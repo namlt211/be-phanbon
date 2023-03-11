@@ -2,20 +2,21 @@ package auth
 
 import (
 	"encoding/json"
-	"green/config"
 	"green/helpers"
 	"green/helpers/crypt"
 	"green/models"
 	"net/http"
-	"os"
-	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-//Chức năng đăng ký
+type Person struct {
+    Name string `json:"name"`
+    Age int `json:"age"`
+}
+
+// Chức năng đăng ký
 func Register(w http.ResponseWriter, r *http.Request) {
 	var userInput models.User
 	decoder := json.NewDecoder(r.Body)
@@ -25,7 +26,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	//check password 
+	//check password
 	if err := crypt.VerifyPassword(userInput.Password); err != nil {
 		response := map[string]string {"message": err.Error()}
 		helpers.ResponseJSON(w, http.StatusInternalServerError, response)
@@ -64,7 +65,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 //Chức năng đăng nhập
 func Login(w http.ResponseWriter, r *http.Request) {
 	var userInput models.User
-	
+
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&userInput); err != nil {
 		response := map[string]string{"message": err.Error()}
@@ -77,7 +78,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if err := models.MysqlConn.Where("user_name = ?", userInput.UserName).First(&user).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
-			response := map[string]string{"message": "Tài khoản hoặc mật khẩu không đúng !"}
+			response := map[string]interface{}{
+				"Message": "Tài khoản hoặc mật khẩu không đúng !",
+				"Code": 101,
+			}
 			helpers.ResponseJSON(w, http.StatusUnauthorized, response)
 			return
 		default:
@@ -92,36 +96,26 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		helpers.ResponseJSON(w, http.StatusUnauthorized, response)
 		return
 	}
-
-	//setup token
-	expTime := time.Now().Add(time.Minute * 1)
-	claims := &config.JWTClaim{
-		Id : user.Id,
-		RegisteredClaims : jwt.RegisteredClaims{
-			Issuer: "green",
-			ExpiresAt: jwt.NewNumericDate(expTime),
-		},
-	}
-	
-	//create token
-	jwtSecret := os.Getenv("JWT_KEY")
-	token, err := crypt.RegisterAccessToken(jwtSecret, claims)
+	//create access token token
+	// accessToken, err := crypt.RegisterAccessToken(&user)
+	//create refresh token
+	refreshToken, err := crypt.RegisterAccessToken(&user)
 	if err != nil{
 		response := map[string]string {"message": err.Error()}
 		helpers.ResponseJSON(w, http.StatusInternalServerError, response)
 		return
 	}
 		//set token cookie
-	http.SetCookie(w, &http.Cookie{
-		Name: "token",
+		// var RefreshToken string = "Bearer " + refreshToken
+		http.SetCookie(w, &http.Cookie{
+		Name: "user_token",
 		Path: "/",
-		Value: token,
+		Value: refreshToken,
 		HttpOnly: true,
 	})
 
-	response := map[string]string {"message": "Đăng nhập thành công !", "token" : token}
+	response := map[string]interface{} {"message": "Đăng nhập thành công", "status": true, "user" : user}
 	helpers.ResponseJSON(w, http.StatusOK, response)
-
 }
 
 //Chức năng đăng xuất
@@ -129,13 +123,15 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	//xóa toke cookie
 
 	http.SetCookie(w, &http.Cookie{
-		Name: "token",
+		Name: "user_token",
 		Path: "/",
 		Value: "",
-		HttpOnly: true,
+		HttpOnly: false,
 		MaxAge: -1,
 	})
 
 	response := map[string]string{"message":"Tạm biệt !"}
 	helpers.ResponseJSON(w, http.StatusOK, response)
 }
+
+

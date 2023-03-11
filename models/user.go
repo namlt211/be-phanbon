@@ -6,29 +6,29 @@ import (
 )
 
 type User struct {
-	Id        int64     `gorm: "primaryKey" json:"id"`
-	FirstName string    `gorm: "not null" "nvachar(300)" json:"first_name"`
-	LastName  string    `gorm: "not null" "nvachar(300)" json:"last_name"`
-	Email 	  string    `gorm: "not null" "nvachar(300)" json:"email"`
-	Phone     string    `gorm: "not null" "nvachar(300)" json:"phone"`
-	UserName  string    `gorm: "not null" "nvachar(300)" json:"user_name"`
-	Password  string    `gorm: "not null" "nvachar(300)" json:"password"`
-	Avatar    string    `gorm: "nvachar(300) json:"avatar"`
-	Status    int       `gorm: "type: int(2)" json:"status"`
+	Id        int64     `json:"id" gorm:"primaryKey;column:id;"`
+	FirstName string    `json:"first_name" gorm:"not null;nvachar(300);column:first_name;"`
+	LastName  string    `json:"last_name" gorm:"not null;nvachar(300);column:last_name;"`
+	Email 	  string    `json:"email" gorm:"not null;nvachar(300);column:email;"`
+	Phone     string    `json:"phone" gorm:"not null;nvachar(300);column:phone;"`
+	UserName  string    `json:"user_name" gorm:"not null;nvachar(300);column:user_name;"`
+	Password  string    `json:"password" gorm:"not null;nvachar(300);column:password;"`
+	Avatar    string    `json:"avatar" gorm:"nvachar(300);column:avatar;"`
+	Status    int       `json:"status" gorm:"default:1;column:status;"`
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at;"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at;"`
 	DeleteAt *time.Time  `json:"delete_at" gorm:"column:updated_at;"`
 }
 
 type UserRole struct {
-	UserID int64
-	User User `gorm:"foreignKey: UserID"`
-	RoleID int64
-	Role Role `gorm:"foreignKey: RoleID"`
-	Status    int       `gorm: "type: int(2)" json:"status"`
-	CreatedAt time.Time `gorm: "default:CURRENT_TIMESTAMP()" "type:datetime" json:"created_at"`
-	UpdatedAt time.Time `gorm: "default: CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP()" "type:datetime" json:"updated_at"`
-	DeleteAt *time.Time `gorm: "type:datetime" json:"delete_at"`
+	UserID int64 `json:"user_id" gorm:"column:user_id;"`
+	User User `json:"user" gorm:"foreignKey: UserID"`
+	RoleID int64 `json:"role_id"`
+	Role Role `json:"role" gorm:"foreignKey:RoleID"`
+	Status    int       `json:"status" gorm:"type: int(2);default:1"`
+	CreatedAt time.Time `json:"created_at" gorm:"default:CURRENT_TIMESTAMP();type:datetime;"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"default:CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP();type:datetime;" `
+	DeleteAt *time.Time `json:"delete_at" gorm:"type:datetime;" `
 }
 
 

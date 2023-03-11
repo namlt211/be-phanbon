@@ -3,22 +3,32 @@ package models
 import "time"
 
 type Role struct {
-	Id        int64      `gorm: "primaryKey" json:"id"`
-	RoleName  string     `gorm: "not null" "nvachar(300)" json:"role_name"`
-	Description string `gorm: "nvachar(300)" json:"description"`
-	Status    int       `gorm: "type: int(2)" json:"status"`
-	CreatedAt time.Time `gorm: "TIMESTAMP DEFAULT CURRENT_TIMESTAMP" "type:datetime" json:"created_at"`
-	UpdatedAt time.Time `gorm: "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" "type:datetime" json:"updated_at"`
-	DeleteAt *time.Time `gorm: "type:datetime" json:"delete_at"`
+	Id        int64      `json:"id" gorm: "primaryKey;column:id;"`
+	RoleName  string     `json:"role_name" gorm:"not null;nvachar(300);column:role_name"`
+	Description string  `json:"description" gorm:"nvachar(300);column:description;"`
+	Status    int       `json:"status" gorm:"type:int(2);default:1;column:status;"`
+	CreatedAt time.Time `json:"created_at" gorm:"TIMESTAMP DEFAULT CURRENT_TIMESTAMP();type:datetime;column:created_at;"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP();type:datetime;column:updated_at;"`
+	DeleteAt *time.Time `json:"delete_at" gorm:"type:datetime;column:delete_at;"`
 }
 
+// type RolePermission struct {
+// 	RoleID int64 `json:"role_id" gorm:"column:role_id;"`
+// 	Role Role `json:"role" gorm:"foreignKey:RoleID;column:role;"`
+// 	PermissionID int64 `json:"permission_id" gorm:"column:permission_id;"`
+// 	Permission Permission `json:"permission" gorm:"foreignKey:PermissionID;column:permission;"`
+// 	Status    int       `json:"status" gorm:"type: int(2);default:1;column:status;"`
+// 	CreatedAt time.Time `json:"created_at" gorm:"TIMESTAMP DEFAULT CURRENT_TIMESTAMP();type:datetime;column:created_at;"`
+// 	UpdatedAt time.Time `json:"updated_at" gorm:"TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP();type:datetime;column:updated_at;"`
+// 	DeleteAt *time.Time `json:"delete_at" gorm:"type:datetime;column:deleted_at;" `
+// }
 type RolePermission struct {
-	RoleID int64
-	Role Role `gorm:"foreignKey: RoleID"`
-	PermissionID int64
-	Permission Permission `gorm:"foreignKey: PermissionID"`
-	Status    int       `gorm: "type: int(2)" json:"status"`
-	CreatedAt time.Time `gorm: "TIMESTAMP DEFAULT CURRENT_TIMESTAMP" "type:datetime" json:"created_at"`
-	UpdatedAt time.Time `gorm: "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" "type:datetime" json:"updated_at"`
-	DeleteAt *time.Time `gorm: "type:datetime" json:"delete_at"`
+	RoleID       int64       `json:"role_id" gorm:"column:role_id;"`
+	Role         Role        `gorm:"foreignKey:RoleID;"`
+	PermissionID int64       `json:"permission_id" gorm:"column:permission_id;"`
+	Permission   Permission  `gorm:"foreignKey:PermissionID;"`
+	Status       int         `json:"status" gorm:"type:int(2);default:1;column:status;"`
+	CreatedAt    time.Time   `json:"created_at" gorm:"default:CURRENT_TIMESTAMP();type:datetime;column:created_at;"`
+	UpdatedAt    time.Time   `json:"updated_at" gorm:"default:CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP();type:datetime;column:updated_at;"`
+	DeletedAt    *time.Time  `json:"deleted_at" gorm:"type:datetime;column:deleted_at;" `
 }
