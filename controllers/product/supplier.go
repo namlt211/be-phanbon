@@ -24,7 +24,8 @@ func AddSupplier(w http.ResponseWriter, r *http.Request) {
 		helpers.ResponseJSON(w, http.StatusBadRequest, response)
 		return
 	}
-	response := map[string]interface{}{"message": "Thêm nhà cung cấp thành công !", "status": true, "data": supplier}
+
+	response := map[string]interface{}{"message": "Thêm nhà cung cấp thành công !", "status": true, "data": supplier }
 	helpers.ResponseJSON(w, http.StatusOK, response)
 }
 
@@ -81,7 +82,7 @@ func UpdateSupplier(w http.ResponseWriter, r *http.Request){
 		helpers.ResponseJSON(w, http.StatusInternalServerError, response)
 		return
 	}
-	response := map[string]interface{}{"message": "Cập nhật nhà cung cấp thành công !", "status": true}
+	response := map[string]interface{}{"message": "Cập nhật nhà cung cấp thành công !", "status": true, "decode": supplierUpdate}
 	helpers.ResponseJSON(w, http.StatusOK, response)
 }
 

@@ -70,3 +70,9 @@ func UserExists(db * gorm.DB, username string, email string, phone string) bool 
 	db.Where("user_name = ?", username).Or("email = ?", email).Or("phone = ?", phone).First(&user)
 	return user.Id == 0
 }
+//kiểm tra số điện thoại đã tồn tại
+func PhoneExists(db * gorm.DB, phone string) bool {
+	var user models.User
+	db.Where("phone = ?", phone).First(&user)
+	return user.Id == 0
+}

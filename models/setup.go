@@ -25,6 +25,6 @@ func ConnectDB (){
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&User{}, &UserRole{}, &Role{}, &Permission{}, &RolePermission{}, &Order{}, &OrderDetails{}, &Product{}, &Supplier{})
+	db.AutoMigrate(&User{},&Customer{}, &UserRole{}, &Role{}, &Permission{}, &RolePermission{}, &Order{}, &OrderDetails{}, &Product{}, &Supplier{})
 	MysqlConn = db
 }

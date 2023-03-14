@@ -12,6 +12,7 @@ type Product struct {
 	ProductDescription string `json:"product_description" gorm:"nvachar(300);column:product_description;"`
 	ProductPrice float64 `json:"product_price" gorm:"not null;type:float(10,2);column:product_price;"`
 	ProductImage string `json:"product_image "gorm: "nvachar(300);column:product_image;"`
+	Unit string `json:"unit" gorm:"nvachar(300);column:unit;"`
 	Status    int       `json:"status" gorm:"type:int(2);default:1;column:status;"`
 	CreatedAt time.Time  `json:"created_at" gorm: "default:CURRENT_TIMESTAMP();type:datetime;column:created_at;"`
 	UpdatedAt time.Time  ` json:"updated_at" gorm: "default: CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP()" "type:datetime;column:updated_at"`
