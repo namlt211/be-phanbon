@@ -58,13 +58,21 @@ func NewRouter(engine *gin.Engine) {
 
 	//order router start
 	r.HandleFunc("/order/getall", order.GetAllOrder).Methods("GET")
-	r.HandleFunc("/order/create", order.CreateOrder).Methods("POST")
+	r.HandleFunc("/order/add", order.CreateOrder).Methods("POST")
 	r.HandleFunc("/order/getone", order.GetOneOrder).Methods("GET")
 	//order router end
 
 	//order details router start
 	r.HandleFunc("/order-details/getall", order.GetAllOrderDetail).Methods("GET")
+	r.HandleFunc("/order-details/add", order.CreateOrderDetail).Methods("POST")
 	//order details router end
+
+
+
+	//payment router start
+	r.HandleFunc("/payment/add", order.CreatePayment).Methods("POST")
+	//payment router end
+
 
 
 

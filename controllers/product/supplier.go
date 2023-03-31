@@ -3,6 +3,7 @@ package product
 import (
 	"encoding/json"
 	"green/helpers"
+	"green/helpers/crypt"
 	"green/models"
 	"net/http"
 	"strconv"
@@ -19,6 +20,11 @@ func AddSupplier(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+	if !crypt.SupplierNameExists(models.MysqlConn.Table("suppliers"), supplier.Name){
+		response := map[string]string{"message": "Tên nhà cung cấp đã tồn tại !"}
+		helpers.ResponseJSON(w, http.StatusBadRequest, response)
+		return
+	}
 	if err := models.MysqlConn.Create(&supplier).Error; err != nil {
 		response := map[string]string{"message": "Lỗi khi thêm nhà cung cấp"}
 		helpers.ResponseJSON(w, http.StatusBadRequest, response)
@@ -31,17 +37,20 @@ func AddSupplier(w http.ResponseWriter, r *http.Request) {
 
 
 func GetAllSupplier(w http.ResponseWriter, r *http.Request){
-	var supplier []models.Supplier
-	if err := models.MysqlConn.Find(&supplier).Error; err != nil {
-		response := map[string]string{"message": err.Error()}
-		helpers.ResponseJSON(w, http.StatusBadRequest, response)
-		return
+	var suppliers []struct {
+		Id uint `json:"id"`
+		Name string `json:"name"`
+		Phone string `json:"phone"`
+		Description string `json:"description"`
 	}
-	response := map[string]interface{}{"message": "Lấy nhà cung cấp thành công !", "status": true, "data": supplier}
+	models.MysqlConn.Table(`suppliers`).
+	Select(`suppliers.id, suppliers.name, suppliers.phone, suppliers.description`).
+	Where(`suppliers.is_delete = 1`).
+	Scan(&suppliers)
+	response := map[string]interface{}{"message": "Lấy nhà cung cấp thành công !", "status": true, "data": suppliers}
 	helpers.ResponseJSON(w, http.StatusOK, response)
+	
 }
-
-
 func UpdateSupplier(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)
     idParam := vars["id"]
@@ -73,6 +82,11 @@ func UpdateSupplier(w http.ResponseWriter, r *http.Request){
 		helpers.ResponseJSON(w, http.StatusBadRequest, response)
 		return
 	}
+	if supplier.Name == supplierUpdate.Name && int(supplier.Id) != id{
+		response := map[string]string{"message": "Nhà cung cấp đã tồn tại !"}
+		helpers.ResponseJSON(w, http.StatusBadRequest, response)
+		return
+	}
 	supplier.Name = supplierUpdate.Name
 	supplier.Description = supplierUpdate.Description
 	supplier.UpdatedAt = supplierUpdate.UpdatedAt
@@ -101,14 +115,16 @@ func GetSupplierById(w http.ResponseWriter, r *http.Request){
 		helpers.ResponseJSON(w, http.StatusBadRequest, response)
 		return
 	}
-	var supplier models.Supplier
-	result := models.MysqlConn.First(&supplier, id)
-	if result.Error != nil {
-		response := map[string]string{"message": "Không tìm thấy nhà cung cấp !"}
-		helpers.ResponseJSON(w, http.StatusBadRequest, response)
-		return
-    }
-	response := map[string]interface{}{"message": "Đã thấy !", "status": true, "data": supplier}
+	var supplier struct {
+		Id uint `json:"id"`
+		Name string `json:"name"`
+		Description string `json:"description"`
+	}
+	models.MysqlConn.Table(`suppliers`).
+	Select(`suppliers.id, suppliers.name, suppliers.description`).
+	Where(`suppliers.status = 1 && suppliers.id = ?`, id).
+	Scan(&supplier)
+	response := map[string]interface{}{"message": "Lấy nhà cung cấp thành công !", "status": true, "data": supplier}
 	helpers.ResponseJSON(w, http.StatusOK, response)
 }
 

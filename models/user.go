@@ -15,6 +15,7 @@ type User struct {
 	Password  string    `json:"password" gorm:"not null;nvachar(300);column:password;"`
 	Avatar    string    `json:"avatar" gorm:"nvachar(300);column:avatar;"`
 	Status    int       `json:"status" gorm:"default:1;column:status;"`
+	IsDelete int `json:"is_delete" gorm:"type:int(2);default:1;column:is_delete;"`
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at;"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at;"`
 	DeleteAt *time.Time  `json:"delete_at" gorm:"column:updated_at;"`
@@ -26,9 +27,10 @@ type UserRole struct {
 	RoleID int64 `json:"role_id"`
 	Role Role `json:"role" gorm:"foreignKey:RoleID"`
 	Status    int       `json:"status" gorm:"type: int(2);default:1"`
-	CreatedAt time.Time `json:"created_at" gorm:"default:CURRENT_TIMESTAMP();type:datetime;"`
-	UpdatedAt time.Time `json:"updated_at" gorm:"default:CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP();type:datetime;" `
-	DeleteAt *time.Time `json:"delete_at" gorm:"type:datetime;" `
+	IsDelete int `json:"is_delete" gorm:"type:int(2);default:1;column:is_delete;"`
+	CreatedAt time.Time  `json:"created_at" gorm:"column:created_at;"`
+	UpdatedAt time.Time  `json:"updated_at" gorm:"column:updated_at;"`
+	DeleteAt  *time.Time `json:"delete_at" gorm:"column:updated_at;"`
 }
 
 

@@ -76,3 +76,10 @@ func PhoneExists(db * gorm.DB, phone string) bool {
 	db.Where("phone = ?", phone).First(&user)
 	return user.Id == 0
 }
+
+
+func SupplierNameExists(db * gorm.DB, name string) bool {
+	var supplier models.Supplier
+	db.Where("name = ?", name).First(&supplier)
+	return supplier.Id == 0
+}

@@ -92,13 +92,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userInput.Password)); err != nil {
-		response := map[string]string{"message": "Tài khoản hoặc mật khẩu không đúng !"}
+		response := map[string]string{"message": "Tài khoản hoặc mật khẩu không đúng 1 !"}
 		helpers.ResponseJSON(w, http.StatusUnauthorized, response)
 		return
 	}
-	//create access token token
-	// accessToken, err := crypt.RegisterAccessToken(&user)
-	//create refresh token
+	
 	refreshToken, err := crypt.RegisterAccessToken(&user)
 	if err != nil{
 		response := map[string]string {"message": err.Error()}
@@ -106,7 +104,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 		//set token cookie
-		// var RefreshToken string = "Bearer " + refreshToken
 		http.SetCookie(w, &http.Cookie{
 		Name: "user_token",
 		Path: "/",
@@ -121,7 +118,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 //Chức năng đăng xuất
 func Logout(w http.ResponseWriter, r *http.Request) {
 	//xóa toke cookie
-
 	http.SetCookie(w, &http.Cookie{
 		Name: "user_token",
 		Path: "/",
